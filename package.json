@@ -1,0 +1,54 @@
+{
+  "name": "lab-management-desktop",
+  "version": "1.0.0",
+  "description": "Laboratory Management Desktop Application",
+  "main": "main.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"npm run start-server\" \"npm run start-electron\"",
+    "start-server": "cd server && python app.py",
+    "start-electron": "electron .",
+    "build": "npm run build-react && electron-builder",
+    "build-react": "cd src && npm run build",
+    "dist": "npm run build",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "setup": "npm install && cd server && pip install -r requirements.txt",
+    "clean": "rm -rf node_modules package-lock.json && cd server && rm -f database.sqlite",
+    "reset": "npm run clean && npm run setup",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0"
+  },
+  "build": {
+    "appId": "com.labprog.lab-management",
+    "productName": "Lab Management System",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/build/**/*",
+      "server/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "electron": "^38.2.0"
+  }
+}

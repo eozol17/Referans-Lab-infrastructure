@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .login-type {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .login-type button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .login-type button.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .demo-credentials {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .demo-credentials strong {
+            color: #333;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Lab Management System</h1>
+            <p>Sign in to your account</p>
+        </div>
+
+        <div class="login-type">
+            <button id="personnelBtn" class="active" onclick="switchLoginType('personnel')">Personnel</button>
+            <button id="patientBtn" onclick="switchLoginType('patient')">Patient</button>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group" id="emailGroup">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group" id="userNumberGroup" style="display: none;">
+                <label class="form-label">User Number</label>
+                <input type="text" id="userNumber" class="form-control" placeholder="Enter your user number">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+
+        <div class="demo-credentials">
+            <strong>Demo Credentials:</strong><br>
+            <strong>Personnel:</strong> personnel@lab.com / personnel123<br>
+            <strong>Admin:</strong> admin@lab.com / admin123<br>
+            <strong>Patient:</strong> Use User Number (PAT000001, etc.)
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        let currentLoginType = 'personnel';
+
+        function switchLoginType(type) {
+            currentLoginType = type;
+            
+            // Update button styles
+            document.getElementById('personnelBtn').classList.toggle('active', type === 'personnel');
+            document.getElementById('patientBtn').classList.toggle('active', type === 'patient');
+            
+            // Show/hide appropriate fields
+            const emailGroup = document.getElementById('emailGroup');
+            const userNumberGroup = document.getElementById('userNumberGroup');
+            
+            if (type === 'personnel') {
+                emailGroup.style.display = 'block';
+                userNumberGroup.style.display = 'none';
+                document.getElementById('email').required = true;
+                document.getElementById('userNumber').required = false;
+            } else {
+                emailGroup.style.display = 'none';
+                userNumberGroup.style.display = 'block';
+                document.getElementById('email').required = false;
+                document.getElementById('userNumber').required = true;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status';
+            statusDiv.textContent = 'Signing in...';
+            
+            try {
+                const identifier = currentLoginType === 'personnel' 
+                    ? document.getElementById('email').value 
+                    : document.getElementById('userNumber').value;
+                
+                const password = document.getElementById('password').value;
+                
+                const response = await fetch('http://localhost:8000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: currentLoginType === 'personnel' ? 'email' : 'userNumber',
+                        identifier: identifier,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `Login successful! Welcome ${data.user.firstName} ${data.user.lastName} (${data.user.role})`;
+                    
+                    // Store token for future requests
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Redirect to dashboard (simulate)
+                    setTimeout(() => {
+                        alert('Login successful! Dashboard would open here.');
+                    }, 1000);
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = data.message || 'Login failed';
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Connection error. Make sure the server is running on port 8000.';
+                console.error('Login error:', error);
+            }
+        });
+
+        // Test API connection on page load
+        window.addEventListener('load', async function() {
+            try {
+                const response = await fetch('http://localhost:8000/api/health');
+                if (response.ok) {
+                    console.log('✅ API server is running');
+                } else {
+                    console.log('⚠️ API server responded with error');
+                }
+            } catch (error) {
+                console.log('❌ API server is not accessible');
+            }
+        });
+    </script>
+</body>
+</html>

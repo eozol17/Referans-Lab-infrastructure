@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .app-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .login-type {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .login-type button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .login-type button.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .demo-credentials {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .demo-credentials strong {
+            color: #333;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .nav button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="app-container">
+        <div class="header">
+            <h1>Lab Management System</h1>
+            <p>Desktop Application</p>
+        </div>
+
+        <div class="login-type">
+            <button id="personnelBtn" class="active" onclick="switchLoginType('personnel')">Personnel</button>
+            <button id="patientBtn" onclick="switchLoginType('patient')">Patient</button>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group" id="emailGroup">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group" id="userNumberGroup" style="display: none;">
+                <label class="form-label">User Number</label>
+                <input type="text" id="userNumber" class="form-control" placeholder="Enter your user number">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+
+        <div class="demo-credentials">
+            <strong>Demo Credentials:</strong><br>
+            <strong>Personnel:</strong> personnel@lab.com / personnel123<br>
+            <strong>Admin:</strong> admin@lab.com / admin123<br>
+            <strong>Patient:</strong> Use User Number (PAT000001, etc.)
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="dashboard">
+        <div class="header">
+            <h1>Lab Management Dashboard</h1>
+            <p>Welcome to the desktop application</p>
+        </div>
+
+        <div class="user-info" id="userInfo">
+            <!-- User info will be populated here -->
+        </div>
+
+        <div class="nav">
+            <button class="active" onclick="showSection('dashboard')">Dashboard</button>
+            <button onclick="showSection('patients')">Patients</button>
+            <button onclick="showSection('tests')">Tests</button>
+            <button onclick="showSection('results')">Results</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <div id="dashboardContent" class="card">
+            <h3>Dashboard</h3>
+            <p>Welcome to the Lab Management System desktop application!</p>
+            <p>This is a native desktop application built with Electron that works on both macOS and Windows.</p>
+            
+            <div style="margin-top: 20px;">
+                <h4>Features:</h4>
+                <ul>
+                    <li>✅ Desktop application (not web-based)</li>
+                    <li>✅ Works on macOS and Windows</li>
+                    <li>✅ User authentication system</li>
+                    <li>✅ Personnel and Patient login types</li>
+                    <li>✅ SQLite database integration</li>
+                    <li>✅ Test catalog management</li>
+                    <li>✅ User test management</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="patientsContent" class="card" style="display: none;">
+            <h3>Patient Management</h3>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="loadPatients()">Load Patients</button>
+                <button class="btn btn-primary" onclick="showAddPatientForm()">Add New Patient</button>
+                <button class="btn btn-primary" onclick="showAddPersonnelForm()">Add Personnel</button>
+            </div>
+
+            <!-- Add Patient Form -->
+            <div id="addPatientForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                <h4>Register New Patient</h4>
+                <form id="newPatientForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" id="patientFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" id="patientLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address (Optional)</label>
+                        <input type="email" id="patientEmail" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="patientPhone" class="form-control" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" id="patientDob" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select id="patientGender" class="form-control" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea id="patientAddress" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">Register Patient</button>
+                        <button type="button" class="btn" onclick="hideAddPatientForm()" style="background: #6c757d; color: white;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add Personnel Form -->
+            <div id="addPersonnelForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                <h4>Register New Personnel</h4>
+                <form id="newPersonnelForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" id="personnelFirstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" id="personnelLastName" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="personnelEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="personnelPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="personnelPhone" class="form-control" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" id="personnelDob" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select id="personnelGender" class="form-control" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea id="personnelAddress" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">Register Personnel</button>
+                        <button type="button" class="btn" onclick="hideAddPersonnelForm()" style="background: #6c757d; color: white;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Patients List -->
+            <div id="patientsList"></div>
+        </div>
+
+        <div id="testsContent" class="card" style="display: none;">
+            <h3>Test Management</h3>
+            
+            <!-- Test Catalog Section -->
+            <div style="margin-bottom: 30px;">
+                <h4>Test Catalog</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" onclick="loadTestCatalog()">Load Test Catalog</button>
+                    <button class="btn btn-primary" onclick="showAddTestForm()">Add New Test</button>
+                </div>
+                <div id="testCatalogList"></div>
+            </div>
+
+            <!-- Add Test Form -->
+            <div id="addTestForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                <h4>Add New Test to Catalog</h4>
+                <form id="newTestForm">
+                    <div class="form-group">
+                        <label class="form-label">Test Name</label>
+                        <input type="text" id="testName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="testCategory" class="form-control" required>
+                            <option value="">Select Category</option>
+                            <option value="Microbiology">Microbiology</option>
+                            <option value="Vitamin">Vitamin</option>
+                            <option value="Blood">Blood</option>
+                            <option value="Urine">Urine</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="testDescription" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Preparation Instructions</label>
+                        <textarea id="testPreparation" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Normal Range</label>
+                        <input type="text" id="testNormalRange" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price ($)</label>
+                        <input type="number" id="testPrice" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estimated Duration (minutes)</label>
+                        <input type="number" id="testDuration" class="form-control" required>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">Add Test</button>
+                        <button type="button" class="btn" onclick="hideAddTestForm()" style="background: #6c757d; color: white;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- User Tests Section -->
+            <div>
+                <h4>User Tests</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" onclick="loadUserTests()">Load User Tests</button>
+                    <button class="btn btn-primary" onclick="showAssignTestForm()">Assign Test to User</button>
+                </div>
+                <div id="userTestsList"></div>
+            </div>
+
+            <!-- Assign Test Form -->
+            <div id="assignTestForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 4px; margin-top: 20px;">
+                <h4>Assign Test to User</h4>
+                <form id="assignTestToUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Select User</label>
+                        <select id="assignUserId" class="form-control" required>
+                            <option value="">Select User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Test</label>
+                        <select id="assignTestId" class="form-control" required>
+                            <option value="">Select Test</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Test Date</label>
+                        <input type="date" id="assignTestDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea id="assignTestNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">Assign Test</button>
+                        <button type="button" class="btn" onclick="hideAssignTestForm()" style="background: #6c757d; color: white;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="resultsContent" class="card" style="display: none;">
+            <h3>Test Results Management</h3>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="loadAllResults()">Load All Results</button>
+                <button class="btn btn-primary" onclick="loadPendingResults()">Load Pending Results</button>
+                <button class="btn btn-primary" onclick="loadCompletedResults()">Load Completed Results</button>
+            </div>
+
+            <!-- Filter Options -->
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <h4>Filter Results</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">Filter by User</label>
+                        <select id="filterUserId" class="form-control" onchange="filterResults()">
+                            <option value="">All Users</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Filter by Test</label>
+                        <select id="filterTestId" class="form-control" onchange="filterResults()">
+                            <option value="">All Tests</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Filter by Status</label>
+                        <select id="filterStatus" class="form-control" onchange="filterResults()">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Result Modal -->
+            <div id="updateResultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; width: 500px; max-width: 90vw;">
+                    <h4>Update Test Result</h4>
+                    <form id="updateResultForm">
+                        <input type="hidden" id="updateResultId">
+                        <div class="form-group">
+                            <label class="form-label">Test Result</label>
+                            <textarea id="updateTestResult" class="form-control" rows="4" placeholder="Enter test result details..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select id="updateTestStatus" class="form-control">
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea id="updateTestNotes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-primary">Update Result</button>
+                            <button type="button" class="btn" onclick="hideUpdateResultModal()" style="background: #6c757d; color: white;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div id="resultsList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentLoginType = 'personnel';
+        let currentUser = null;
+
+        function switchLoginType(type) {
+            currentLoginType = type;
+            
+            // Update button styles
+            document.getElementById('personnelBtn').classList.toggle('active', type === 'personnel');
+            document.getElementById('patientBtn').classList.toggle('active', type === 'patient');
+            
+            // Show/hide appropriate fields
+            const emailGroup = document.getElementById('emailGroup');
+            const userNumberGroup = document.getElementById('userNumberGroup');
+            
+            if (type === 'personnel') {
+                emailGroup.style.display = 'block';
+                userNumberGroup.style.display = 'none';
+                document.getElementById('email').required = true;
+                document.getElementById('userNumber').required = false;
+            } else {
+                emailGroup.style.display = 'none';
+                userNumberGroup.style.display = 'block';
+                document.getElementById('email').required = false;
+                document.getElementById('userNumber').required = true;
+            }
+        }
+
+        function showSection(section) {
+            // Update nav buttons
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide content
+            document.querySelectorAll('[id$="Content"]').forEach(content => content.style.display = 'none');
+            document.getElementById(section + 'Content').style.display = 'block';
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status';
+            statusDiv.textContent = 'Signing in...';
+            
+            try {
+                const identifier = currentLoginType === 'personnel' 
+                    ? document.getElementById('email').value 
+                    : document.getElementById('userNumber').value;
+                
+                const password = document.getElementById('password').value;
+                
+                const response = await fetch('http://localhost:8000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: currentLoginType === 'personnel' ? 'email' : 'userNumber',
+                        identifier: identifier,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `Login successful! Welcome ${data.user.firstName} ${data.user.lastName}`;
+                    
+                    // Store user data
+                    currentUser = data.user;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show dashboard
+                    setTimeout(() => {
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('dashboardScreen').classList.add('active');
+                        
+                        // Update user info
+                        document.getElementById('userInfo').innerHTML = `
+                            <strong>Logged in as:</strong> ${data.user.firstName} ${data.user.lastName}<br>
+                            <strong>Role:</strong> ${data.user.role}<br>
+                            <strong>User Number:</strong> ${data.user.userNumber || 'N/A'}
+                        `;
+                    }, 1000);
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = data.message || 'Login failed';
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Connection error. Make sure the Flask server is running on port 8000.';
+                console.error('Login error:', error);
+            }
+        });
+
+        // Test Management Functions
+        async function loadTestCatalog() {
+            try {
+                const response = await fetch('http://localhost:8000/api/test-catalog', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const tests = await response.json();
+                
+                const container = document.getElementById('testCatalogList');
+                if (tests.length === 0) {
+                    container.innerHTML = '<p>No tests in catalog yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = tests.map(test => `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                        <h5>${test.name}</h5>
+                        <p><strong>Category:</strong> ${test.category}</p>
+                        <p><strong>Description:</strong> ${test.description}</p>
+                        <p><strong>Price:</strong> $${test.price}</p>
+                        <p><strong>Duration:</strong> ${test.estimatedDuration} minutes</p>
+                        <p><strong>Normal Range:</strong> ${test.normalRange}</p>
+                        <button onclick="deleteTest(${test.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                alert('Error loading test catalog: ' + error.message);
+            }
+        }
+
+        async function loadUserTests() {
+            try {
+                const response = await fetch('http://localhost:8000/api/user-tests', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const userTests = await response.json();
+                
+                const container = document.getElementById('userTestsList');
+                if (userTests.length === 0) {
+                    container.innerHTML = '<p>No user tests assigned yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = userTests.map(test => `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                        <h5>${test.testName || 'Test #' + test.id}</h5>
+                        <p><strong>User:</strong> ${test.userName || 'User #' + test.userId}</p>
+                        <p><strong>Status:</strong> ${test.status}</p>
+                        <p><strong>Test Date:</strong> ${test.testDate || 'Not scheduled'}</p>
+                        <p><strong>Result:</strong> ${test.testResult || 'Pending'}</p>
+                        <p><strong>Notes:</strong> ${test.notes || 'None'}</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="updateTestResult(${test.id})" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">Update Result</button>
+                            <button onclick="deleteUserTest(${test.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                alert('Error loading user tests: ' + error.message);
+            }
+        }
+
+        function showAddTestForm() {
+            document.getElementById('addTestForm').style.display = 'block';
+        }
+
+        function hideAddTestForm() {
+            document.getElementById('addTestForm').style.display = 'none';
+            document.getElementById('newTestForm').reset();
+        }
+
+        function showAssignTestForm() {
+            document.getElementById('assignTestForm').style.display = 'block';
+            loadUsersForAssignment();
+            loadTestsForAssignment();
+        }
+
+        function hideAssignTestForm() {
+            document.getElementById('assignTestForm').style.display = 'none';
+            document.getElementById('assignTestToUserForm').reset();
+        }
+
+        async function loadUsersForAssignment() {
+            try {
+                const response = await fetch('http://localhost:8000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                const users = data.users || data; // Handle both formats
+                
+                const select = document.getElementById('assignUserId');
+                select.innerHTML = '<option value="">Select User</option>' + 
+                    users.map(user => `<option value="${user.id}">${user.firstName} ${user.lastName} (${user.userNumber || user.email})</option>`).join('');
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function loadTestsForAssignment() {
+            try {
+                const response = await fetch('http://localhost:8000/api/test-catalog', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const tests = await response.json();
+                
+                const select = document.getElementById('assignTestId');
+                select.innerHTML = '<option value="">Select Test</option>' + 
+                    tests.map(test => `<option value="${test.id}">${test.name} - $${test.price}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading tests:', error);
+            }
+        }
+
+        // Form submission handlers
+        document.getElementById('newTestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const testData = {
+                name: document.getElementById('testName').value,
+                category: document.getElementById('testCategory').value,
+                description: document.getElementById('testDescription').value,
+                preparationInstructions: document.getElementById('testPreparation').value,
+                normalRange: document.getElementById('testNormalRange').value,
+                price: parseFloat(document.getElementById('testPrice').value),
+                estimatedDuration: parseInt(document.getElementById('testDuration').value)
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/test-catalog', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    alert('Test added successfully!');
+                    hideAddTestForm();
+                    loadTestCatalog();
+                } else {
+                    const error = await response.json();
+                    alert('Error adding test: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error adding test: ' + error.message);
+            }
+        });
+
+        document.getElementById('assignTestToUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const assignmentData = {
+                userId: parseInt(document.getElementById('assignUserId').value),
+                testCatalogId: parseInt(document.getElementById('assignTestId').value),
+                testDate: document.getElementById('assignTestDate').value,
+                notes: document.getElementById('assignTestNotes').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/user-tests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(assignmentData)
+                });
+                
+                if (response.ok) {
+                    alert('Test assigned successfully!');
+                    hideAssignTestForm();
+                    loadUserTests();
+                } else {
+                    const error = await response.json();
+                    alert('Error assigning test: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error assigning test: ' + error.message);
+            }
+        });
+
+        // Patient Management Functions
+        async function loadPatients() {
+            try {
+                const response = await fetch('http://localhost:8000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                const users = data.users || data; // Handle both formats
+                
+                const container = document.getElementById('patientsList');
+                if (users.length === 0) {
+                    container.innerHTML = '<p>No users found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = users.map(user => `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                        <h5>${user.firstName} ${user.lastName}</h5>
+                        <p><strong>Role:</strong> ${user.role}</p>
+                        <p><strong>User Number:</strong> ${user.userNumber || 'N/A'}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Phone:</strong> ${user.phone}</p>
+                        <p><strong>Date of Birth:</strong> ${user.dateOfBirth}</p>
+                        <p><strong>Gender:</strong> ${user.gender}</p>
+                        <p><strong>Status:</strong> ${user.isActive ? 'Active' : 'Inactive'}</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="toggleUserStatus(${user.id}, ${user.isActive})" style="background: ${user.isActive ? '#dc3545' : '#28a745'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                                ${user.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button onclick="viewUserTests(${user.id})" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">View Tests</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                alert('Error loading patients: ' + error.message);
+            }
+        }
+
+        function showAddPatientForm() {
+            document.getElementById('addPatientForm').style.display = 'block';
+            document.getElementById('addPersonnelForm').style.display = 'none';
+        }
+
+        function hideAddPatientForm() {
+            document.getElementById('addPatientForm').style.display = 'none';
+            document.getElementById('newPatientForm').reset();
+        }
+
+        function showAddPersonnelForm() {
+            document.getElementById('addPersonnelForm').style.display = 'block';
+            document.getElementById('addPatientForm').style.display = 'none';
+        }
+
+        function hideAddPersonnelForm() {
+            document.getElementById('addPersonnelForm').style.display = 'none';
+            document.getElementById('newPersonnelForm').reset();
+        }
+
+        // Patient Registration Form Handler
+        document.getElementById('newPatientForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const patientData = {
+                firstName: document.getElementById('patientFirstName').value,
+                lastName: document.getElementById('patientLastName').value,
+                phone: document.getElementById('patientPhone').value,
+                dateOfBirth: document.getElementById('patientDob').value,
+                gender: document.getElementById('patientGender').value
+            };
+            
+            // Only add email if provided
+            const email = document.getElementById('patientEmail').value.trim();
+            if (email) {
+                patientData.email = email;
+            }
+            
+            // Only add address if provided
+            const address = document.getElementById('patientAddress').value.trim();
+            if (address) {
+                patientData.address = address;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/register-patient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(patientData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Patient registered successfully! User Number: ${result.user.userNumber}`);
+                    hideAddPatientForm();
+                    loadPatients();
+                } else {
+                    const error = await response.json();
+                    alert('Error registering patient: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error registering patient: ' + error.message);
+            }
+        });
+
+        // Personnel Registration Form Handler
+        document.getElementById('newPersonnelForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const personnelData = {
+                firstName: document.getElementById('personnelFirstName').value,
+                lastName: document.getElementById('personnelLastName').value,
+                email: document.getElementById('personnelEmail').value,
+                password: document.getElementById('personnelPassword').value,
+                phone: document.getElementById('personnelPhone').value,
+                dateOfBirth: document.getElementById('personnelDob').value,
+                gender: document.getElementById('personnelGender').value,
+                address: document.getElementById('personnelAddress').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/register-personnel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(personnelData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Personnel registered successfully! User Number: ${result.user.userNumber}`);
+                    hideAddPersonnelForm();
+                    loadPatients();
+                } else {
+                    const error = await response.json();
+                    alert('Error registering personnel: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error registering personnel: ' + error.message);
+            }
+        });
+
+        // Results Management Functions
+        async function loadAllResults() {
+            await loadResults();
+        }
+
+        async function loadPendingResults() {
+            await loadResults('pending');
+        }
+
+        async function loadCompletedResults() {
+            await loadResults('completed');
+        }
+
+        async function loadResults(statusFilter = null) {
+            try {
+                let url = 'http://localhost:8000/api/user-tests';
+                if (statusFilter) {
+                    url += `?status=${statusFilter}`;
+                }
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const userTests = await response.json();
+                
+                const container = document.getElementById('resultsList');
+                if (userTests.length === 0) {
+                    container.innerHTML = '<p>No test results found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = userTests.map(test => `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                        <h5>${test.testName || 'Test #' + test.id}</h5>
+                        <p><strong>User:</strong> ${test.userName || 'User #' + test.userId}</p>
+                        <p><strong>Status:</strong> <span style="color: ${getStatusColor(test.status)}">${test.status}</span></p>
+                        <p><strong>Test Date:</strong> ${test.testDate || 'Not scheduled'}</p>
+                        <p><strong>Result:</strong> ${test.testResult || 'Pending'}</p>
+                        <p><strong>Notes:</strong> ${test.notes || 'None'}</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="showUpdateResultModal(${test.id}, '${test.testResult || ''}', '${test.status}', '${test.notes || ''}')" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">Update Result</button>
+                            <button onclick="deleteUserTest(${test.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Load filter options
+                await loadFilterOptions();
+            } catch (error) {
+                alert('Error loading results: ' + error.message);
+            }
+        }
+
+        async function loadFilterOptions() {
+            try {
+                // Load users for filter
+                const usersResponse = await fetch('http://localhost:8000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const usersData = await usersResponse.json();
+                const users = usersData.users || usersData; // Handle both formats
+                
+                const userSelect = document.getElementById('filterUserId');
+                userSelect.innerHTML = '<option value="">All Users</option>' + 
+                    users.map(user => `<option value="${user.id}">${user.firstName} ${user.lastName}</option>`).join('');
+                
+                // Load tests for filter
+                const testsResponse = await fetch('http://localhost:8000/api/test-catalog', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const tests = await testsResponse.json();
+                
+                const testSelect = document.getElementById('filterTestId');
+                testSelect.innerHTML = '<option value="">All Tests</option>' + 
+                    tests.map(test => `<option value="${test.id}">${test.name}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading filter options:', error);
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'pending': return '#ffc107';
+                case 'completed': return '#28a745';
+                case 'cancelled': return '#dc3545';
+                default: return '#6c757d';
+            }
+        }
+
+        function showUpdateResultModal(testId, currentResult, currentStatus, currentNotes) {
+            document.getElementById('updateResultId').value = testId;
+            document.getElementById('updateTestResult').value = currentResult;
+            document.getElementById('updateTestStatus').value = currentStatus;
+            document.getElementById('updateTestNotes').value = currentNotes;
+            document.getElementById('updateResultModal').style.display = 'block';
+        }
+
+        function hideUpdateResultModal() {
+            document.getElementById('updateResultModal').style.display = 'none';
+            document.getElementById('updateResultForm').reset();
+        }
+
+        // Update Result Form Handler
+        document.getElementById('updateResultForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const testId = document.getElementById('updateResultId').value;
+            const updateData = {
+                testResult: document.getElementById('updateTestResult').value,
+                status: document.getElementById('updateTestStatus').value,
+                notes: document.getElementById('updateTestNotes').value
+            };
+            
+            try {
+                const response = await fetch(`http://localhost:8000/api/user-tests/${testId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    alert('Test result updated successfully!');
+                    hideUpdateResultModal();
+                    loadAllResults();
+                } else {
+                    const error = await response.json();
+                    alert('Error updating result: ' + error.message);
+                }
+            } catch (error) {
+                alert('Error updating result: ' + error.message);
+            }
+        });
+
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                currentUser = JSON.parse(user);
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').classList.add('active');
+                
+                document.getElementById('userInfo').innerHTML = `
+                    <strong>Logged in as:</strong> ${currentUser.firstName} ${currentUser.lastName}<br>
+                    <strong>Role:</strong> ${currentUser.role}<br>
+                    <strong>User Number:</strong> ${currentUser.userNumber || 'N/A'}
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

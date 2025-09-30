@@ -248,6 +248,7 @@
             <button onclick="showSection('patients')">Patients</button>
             <button onclick="showSection('tests')">Tests</button>
             <button onclick="showSection('results')">Results</button>
+            <button onclick="showSection('userManagement')" id="userManagementBtn" style="display: none;">User Management</button>
             <button onclick="logout()">Logout</button>
         </div>
 
@@ -381,10 +382,17 @@
 
             <!-- Patients List -->
             <div id="patientsList"></div>
+            
+            <!-- User Tests Display -->
+            <div id="userTestsDisplay" style="display: none; margin-top: 30px;">
+                <h4>User Tests</h4>
+                <div id="userTestsList"></div>
+            </div>
         </div>
 
         <div id="testsContent" class="card" style="display: none;">
-            <h3>Test Management</h3>
+            <h3>Test Catalog Management</h3>
+            <p style="color: #666; margin-bottom: 20px;">Manage the test catalog - add new tests and remove existing ones. Test assignment is handled in the Patients section.</p>
             
             <!-- Test Catalog Section -->
             <div style="margin-bottom: 30px;">
@@ -408,11 +416,11 @@
                         <label class="form-label">Category</label>
                         <select id="testCategory" class="form-control" required>
                             <option value="">Select Category</option>
-                            <option value="Microbiology">Microbiology</option>
-                            <option value="Vitamin">Vitamin</option>
-                            <option value="Blood">Blood</option>
-                            <option value="Urine">Urine</option>
-                            <option value="Other">Other</option>
+                            <option value="microbiology">Microbiology</option>
+                            <option value="vitamin">Vitamin</option>
+                            <option value="biochemistry">Biochemistry</option>
+                            <option value="hematology">Hematology</option>
+                            <option value="immunology">Immunology</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -442,46 +450,6 @@
                 </form>
             </div>
 
-            <!-- User Tests Section -->
-            <div>
-                <h4>User Tests</h4>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button class="btn btn-primary" onclick="loadUserTests()">Load User Tests</button>
-                    <button class="btn btn-primary" onclick="showAssignTestForm()">Assign Test to User</button>
-                </div>
-                <div id="userTestsList"></div>
-            </div>
-
-            <!-- Assign Test Form -->
-            <div id="assignTestForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 4px; margin-top: 20px;">
-                <h4>Assign Test to User</h4>
-                <form id="assignTestToUserForm">
-                    <div class="form-group">
-                        <label class="form-label">Select User</label>
-                        <select id="assignUserId" class="form-control" required>
-                            <option value="">Select User</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Select Test</label>
-                        <select id="assignTestId" class="form-control" required>
-                            <option value="">Select Test</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Test Date</label>
-                        <input type="date" id="assignTestDate" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea id="assignTestNotes" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button type="submit" class="btn btn-primary">Assign Test</button>
-                        <button type="button" class="btn" onclick="hideAssignTestForm()" style="background: #6c757d; color: white;">Cancel</button>
-                    </div>
-                </form>
-            </div>
         </div>
 
         <div id="resultsContent" class="card" style="display: none;">
@@ -551,8 +519,69 @@
                 </div>
             </div>
 
+
             <!-- Results List -->
             <div id="resultsList"></div>
+        </div>
+        </div>
+
+        <div id="userManagementContent" class="card" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="userManagementTitle">User Management</h3>
+                <button onclick="showSection('patients')" class="btn" style="background: #6c757d; color: white;">← Back to Patients</button>
+            </div>
+            
+            <!-- User Info -->
+            <div id="userInfoSection" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h4>User Information</h4>
+                <div id="userInfoDetails"></div>
+            </div>
+            
+            <!-- User Actions -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="editUserInfo()" class="btn btn-primary">Edit User Info</button>
+                <button onclick="toggleUserStatusInManagement()" class="btn" id="statusToggleBtn">Toggle Status</button>
+            </div>
+            
+            <!-- Test Assignment -->
+            <div style="margin-bottom: 20px;">
+                <h4>Test Management</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button onclick="showAddTestForUserInManagement()" class="btn btn-success">Assign Test</button>
+                    <button onclick="loadUserTestsInManagement()" class="btn btn-primary">View Assigned Tests</button>
+                </div>
+                <div id="userTestsManagementList"></div>
+            </div>
+        </div>
+
+        <!-- Test Selection Modal -->
+    <div id="testSelectionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; width: 800px; max-width: 95vw; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h4 id="testSelectionTitle">Select Test to Assign</h4>
+                <button type="button" onclick="hideTestSelectionModal()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">✕ Close</button>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Search Tests</label>
+                    <input type="text" id="testSearchInput" class="form-control" placeholder="Search by test name, category, or description..." onkeyup="filterTests()">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="filterTestsByCategory('')" class="btn" style="background: #007bff; color: white;">All</button>
+                    <button onclick="filterTestsByCategory('microbiology')" class="btn" style="background: #6c757d; color: white;">Microbiology</button>
+                    <button onclick="filterTestsByCategory('vitamin')" class="btn" style="background: #6c757d; color: white;">Vitamin</button>
+                    <button onclick="filterTestsByCategory('biochemistry')" class="btn" style="background: #6c757d; color: white;">Biochemistry</button>
+                    <button onclick="filterTestsByCategory('hematology')" class="btn" style="background: #6c757d; color: white;">Hematology</button>
+                    <button onclick="filterTestsByCategory('immunology')" class="btn" style="background: #6c757d; color: white;">Immunology</button>
+                </div>
+            </div>
+            
+            <!-- Tests List -->
+            <div id="testSelectionList" style="max-height: 400px; overflow-y: auto;">
+                <!-- Tests will be loaded here -->
+            </div>
         </div>
     </div>
 
@@ -671,10 +700,11 @@
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-                const tests = await response.json();
+                const data = await response.json();
+                const tests = data.tests || data; // Handle both formats
                 
                 const container = document.getElementById('testCatalogList');
-                if (tests.length === 0) {
+                if (!tests || tests.length === 0) {
                     container.innerHTML = '<p>No tests in catalog yet.</p>';
                     return;
                 }
@@ -695,17 +725,34 @@
             }
         }
 
-        async function loadUserTests() {
+        async function loadUserTests(userId = null) {
             try {
-                const response = await fetch('http://localhost:8000/api/user-tests', {
+                let url = 'http://localhost:8000/api/user-tests';
+                if (userId) {
+                    url += `?userId=${userId}`;
+                }
+                
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-                const userTests = await response.json();
+                const data = await response.json();
+                console.log('User tests API response:', data);
+                
+                // Handle the API response format
+                let userTests = [];
+                if (data.tests && Array.isArray(data.tests)) {
+                    userTests = data.tests;
+                } else if (Array.isArray(data)) {
+                    userTests = data;
+                } else if (data.message) {
+                    // Handle error messages
+                    throw new Error(data.message);
+                }
                 
                 const container = document.getElementById('userTestsList');
-                if (userTests.length === 0) {
+                if (!userTests || userTests.length === 0) {
                     container.innerHTML = '<p>No user tests assigned yet.</p>';
                     return;
                 }
@@ -736,52 +783,6 @@
         function hideAddTestForm() {
             document.getElementById('addTestForm').style.display = 'none';
             document.getElementById('newTestForm').reset();
-        }
-
-        function showAssignTestForm() {
-            document.getElementById('assignTestForm').style.display = 'block';
-            loadUsersForAssignment();
-            loadTestsForAssignment();
-        }
-
-        function hideAssignTestForm() {
-            document.getElementById('assignTestForm').style.display = 'none';
-            document.getElementById('assignTestToUserForm').reset();
-        }
-
-        async function loadUsersForAssignment() {
-            try {
-                const response = await fetch('http://localhost:8000/api/users', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const data = await response.json();
-                const users = data.users || data; // Handle both formats
-                
-                const select = document.getElementById('assignUserId');
-                select.innerHTML = '<option value="">Select User</option>' + 
-                    users.map(user => `<option value="${user.id}">${user.firstName} ${user.lastName} (${user.userNumber || user.email})</option>`).join('');
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        }
-
-        async function loadTestsForAssignment() {
-            try {
-                const response = await fetch('http://localhost:8000/api/test-catalog', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const tests = await response.json();
-                
-                const select = document.getElementById('assignTestId');
-                select.innerHTML = '<option value="">Select Test</option>' + 
-                    tests.map(test => `<option value="${test.id}">${test.name} - $${test.price}</option>`).join('');
-            } catch (error) {
-                console.error('Error loading tests:', error);
-            }
         }
 
         // Form submission handlers
@@ -821,39 +822,6 @@
             }
         });
 
-        document.getElementById('assignTestToUserForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const assignmentData = {
-                userId: parseInt(document.getElementById('assignUserId').value),
-                testCatalogId: parseInt(document.getElementById('assignTestId').value),
-                testDate: document.getElementById('assignTestDate').value,
-                notes: document.getElementById('assignTestNotes').value
-            };
-            
-            try {
-                const response = await fetch('http://localhost:8000/api/user-tests', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify(assignmentData)
-                });
-                
-                if (response.ok) {
-                    alert('Test assigned successfully!');
-                    hideAssignTestForm();
-                    loadUserTests();
-                } else {
-                    const error = await response.json();
-                    alert('Error assigning test: ' + error.message);
-                }
-            } catch (error) {
-                alert('Error assigning test: ' + error.message);
-            }
-        });
-
         // Patient Management Functions
         async function loadPatients() {
             try {
@@ -885,12 +853,13 @@
                             <button onclick="toggleUserStatus(${user.id}, ${user.isActive})" style="background: ${user.isActive ? '#dc3545' : '#28a745'}; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
                                 ${user.isActive ? 'Deactivate' : 'Activate'}
                             </button>
-                            <button onclick="viewUserTests(${user.id})" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">View Tests</button>
+                            <button onclick="openUserManagement(${user.id}, '${user.firstName} ${user.lastName}')" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">Manage User</button>
+                            <button onclick="showAddTestForUser(${user.id}, '${user.firstName} ${user.lastName}')" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Add Test</button>
                         </div>
                     </div>
                 `).join('');
             } catch (error) {
-                alert('Error loading patients: ' + error.message);
+                alert('Error loading patients: ' + (error.message || error.toString()));
             }
         }
 
@@ -912,6 +881,187 @@
         function hideAddPersonnelForm() {
             document.getElementById('addPersonnelForm').style.display = 'none';
             document.getElementById('newPersonnelForm').reset();
+        }
+
+        function showAddTestForUser(userId, userName) {
+            console.log('showAddTestForUser called with:', userId, userName);
+            
+            // Store the selected user ID globally
+            window.selectedUserId = userId;
+            window.selectedUserName = userName;
+            
+            // Update modal title
+            const titleElement = document.getElementById('testSelectionTitle');
+            console.log('Title element:', titleElement);
+            if (titleElement) {
+                titleElement.textContent = `Assign Test to ${userName}`;
+            }
+            
+            // Show the modal
+            const modal = document.getElementById('testSelectionModal');
+            console.log('Modal element:', modal);
+            if (modal) {
+                modal.style.display = 'block';
+                modal.style.visibility = 'visible';
+                modal.style.opacity = '1';
+                console.log('Modal should be visible now');
+                console.log('Modal computed style:', window.getComputedStyle(modal).display);
+                console.log('Modal position:', modal.offsetTop, modal.offsetLeft);
+            } else {
+                console.error('Modal element not found!');
+            }
+            
+            // Load tests for selection
+            loadTestsForSelection();
+        }
+
+        function hideTestSelectionModal() {
+            document.getElementById('testSelectionModal').style.display = 'none';
+            document.getElementById('testSearchInput').value = '';
+            window.selectedUserId = null;
+            window.selectedUserName = null;
+        }
+
+        let allTests = []; // Store all tests for filtering
+
+        async function loadTestsForSelection() {
+            console.log('loadTestsForSelection called');
+            try {
+                console.log('Fetching test catalog...');
+                const response = await fetch('http://localhost:8000/api/test-catalog', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                console.log('Response received:', response.status);
+                const data = await response.json();
+                console.log('Data received:', data);
+                allTests = data.tests || data; // Store all tests
+                console.log('All tests stored:', allTests.length, 'tests');
+                
+                displayTestsInModal(allTests);
+            } catch (error) {
+                console.error('Error loading tests:', error);
+                alert('Error loading tests: ' + (error.message || error.toString()));
+            }
+        }
+
+        function displayTestsInModal(tests) {
+            const container = document.getElementById('testSelectionList');
+            if (!tests || tests.length === 0) {
+                container.innerHTML = '<p>No tests available.</p>';
+                return;
+            }
+            
+            container.innerHTML = tests.map(test => `
+                <div class="test-item" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <h5 style="margin: 0 0 5px 0; color: #333;">${test.name}</h5>
+                        <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;"><strong>Category:</strong> ${test.category}</p>
+                        <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;"><strong>Description:</strong> ${test.description}</p>
+                        <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;"><strong>Price:</strong> $${test.price} | <strong>Duration:</strong> ${test.estimatedDuration} min</p>
+                        <p style="margin: 0; color: #666; font-size: 14px;"><strong>Normal Range:</strong> ${test.normalRange}</p>
+                    </div>
+                    <div style="margin-left: 15px;">
+                        <button onclick="assignTestToUser(${test.id}, '${test.name}')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                            Add Test
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterTests() {
+            const searchTerm = document.getElementById('testSearchInput').value.toLowerCase();
+            const filteredTests = allTests.filter(test => 
+                test.name.toLowerCase().includes(searchTerm) ||
+                test.category.toLowerCase().includes(searchTerm) ||
+                test.description.toLowerCase().includes(searchTerm)
+            );
+            displayTestsInModal(filteredTests);
+        }
+
+        function filterTestsByCategory(category) {
+            // Update button styles
+            document.querySelectorAll('#testSelectionModal .btn').forEach(btn => {
+                btn.style.background = '#6c757d';
+            });
+            event.target.style.background = '#007bff';
+            
+            if (category === '') {
+                displayTestsInModal(allTests);
+            } else {
+                const filteredTests = allTests.filter(test => test.category === category);
+                displayTestsInModal(filteredTests);
+            }
+        }
+
+        async function assignTestToUser(testId, testName) {
+            if (!window.selectedUserId) {
+                alert('No user selected');
+                return;
+            }
+
+            try {
+                const assignmentData = {
+                    userId: parseInt(window.selectedUserId),
+                    testCatalogId: parseInt(testId),
+                    testDate: new Date().toISOString().split('T')[0], // Today's date
+                    notes: `Test assigned via test selection modal`
+                };
+                
+                const response = await fetch('http://localhost:8000/api/user-tests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(assignmentData)
+                });
+                
+                if (response.ok) {
+                    alert(`Test "${testName}" assigned successfully to ${window.selectedUserName}!`);
+                    hideTestSelectionModal();
+                    // Refresh the patients list to show updated status
+                    loadPatients();
+                } else {
+                    const error = await response.json();
+                    alert('Error assigning test: ' + (error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error assigning test: ' + (error.message || error.toString()));
+            }
+        }
+
+        function viewUserTests(userId) {
+            // Show user tests on the current page (Patients section)
+            const userTestsDisplay = document.getElementById('userTestsDisplay');
+            userTestsDisplay.style.display = 'block';
+            loadUserTests(userId);
+        }
+
+        async function toggleUserStatus(userId, currentStatus) {
+            try {
+                const newStatus = currentStatus ? 0 : 1;
+                const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ isActive: newStatus })
+                });
+                
+                if (response.ok) {
+                    alert(`User ${newStatus ? 'activated' : 'deactivated'} successfully!`);
+                    loadPatients(); // Refresh the list
+                } else {
+                    const error = await response.json();
+                    alert('Error updating user status: ' + (error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error updating user status: ' + (error.message || error.toString()));
+            }
         }
 
         // Patient Registration Form Handler
@@ -955,10 +1105,10 @@
                     loadPatients();
                 } else {
                     const error = await response.json();
-                    alert('Error registering patient: ' + error.message);
+                    alert('Error registering patient: ' + (error.message || 'Unknown error'));
                 }
             } catch (error) {
-                alert('Error registering patient: ' + error.message);
+                alert('Error registering patient: ' + (error.message || error.toString()));
             }
         });
 
@@ -994,10 +1144,10 @@
                     loadPatients();
                 } else {
                     const error = await response.json();
-                    alert('Error registering personnel: ' + error.message);
+                    alert('Error registering personnel: ' + (error.message || 'Unknown error'));
                 }
             } catch (error) {
-                alert('Error registering personnel: ' + error.message);
+                alert('Error registering personnel: ' + (error.message || error.toString()));
             }
         });
 
@@ -1143,6 +1293,57 @@
             }
         });
 
+        async function updateTestResult(testId) {
+            // This would open a modal to update test results
+            alert('Update test result functionality - Test ID: ' + testId);
+        }
+
+        async function deleteUserTest(testId) {
+            if (confirm('Are you sure you want to delete this test?')) {
+                try {
+                    const response = await fetch(`http://localhost:8000/api/user-tests/${testId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        alert('Test deleted successfully!');
+                        loadUserTests(); // Refresh the list
+                    } else {
+                        const error = await response.json();
+                        alert('Error deleting test: ' + (error.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    alert('Error deleting test: ' + (error.message || error.toString()));
+                }
+            }
+        }
+
+        async function deleteTest(testId) {
+            if (confirm('Are you sure you want to delete this test from the catalog?')) {
+                try {
+                    const response = await fetch(`http://localhost:8000/api/test-catalog/${testId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        alert('Test deleted successfully!');
+                        loadTestCatalog(); // Refresh the list
+                    } else {
+                        const error = await response.json();
+                        alert('Error deleting test: ' + (error.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    alert('Error deleting test: ' + (error.message || error.toString()));
+                }
+            }
+        }
+
         // Check if user is already logged in
         window.addEventListener('load', function() {
             const token = localStorage.getItem('token');
@@ -1160,6 +1361,185 @@
                 `;
             }
         });
+
+        // User Management Functions
+        let currentManagedUserId = null;
+        let currentManagedUserName = null;
+
+        function openUserManagement(userId, userName) {
+            currentManagedUserId = userId;
+            currentManagedUserName = userName;
+            
+            // Show user management button and navigate to user management
+            document.getElementById('userManagementBtn').style.display = 'inline-block';
+            showSection('userManagement');
+            
+            // Update title
+            document.getElementById('userManagementTitle').textContent = `User Management - ${userName}`;
+            
+            // Load user info
+            loadUserInfo(userId);
+        }
+
+        async function loadUserInfo(userId) {
+            try {
+                const response = await fetch(`http://localhost:8000/api/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                const users = data.users || data;
+                const user = users.find(u => u.id == userId);
+                
+                if (user) {
+                    document.getElementById('userInfoDetails').innerHTML = `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div><strong>Name:</strong> ${user.firstName} ${user.lastName}</div>
+                            <div><strong>User Number:</strong> ${user.userNumber || 'N/A'}</div>
+                            <div><strong>Email:</strong> ${user.email}</div>
+                            <div><strong>Phone:</strong> ${user.phone || 'N/A'}</div>
+                            <div><strong>Role:</strong> ${user.role}</div>
+                            <div><strong>Status:</strong> ${user.isActive ? 'Active' : 'Inactive'}</div>
+                            <div><strong>Date of Birth:</strong> ${user.dateOfBirth || 'N/A'}</div>
+                            <div><strong>Gender:</strong> ${user.gender || 'N/A'}</div>
+                        </div>
+                    `;
+                    
+                    // Update status button
+                    updateStatusButton(user.isActive);
+                }
+            } catch (error) {
+                alert('Error loading user info: ' + (error.message || error.toString()));
+            }
+        }
+
+        function updateStatusButton(isActive) {
+            const statusBtn = document.getElementById('statusToggleBtn');
+            
+            if (isActive) {
+                statusBtn.textContent = 'Deactivate User';
+                statusBtn.style.background = '#dc3545';
+            } else {
+                statusBtn.textContent = 'Activate User';
+                statusBtn.style.background = '#28a745';
+            }
+        }
+
+        async function toggleUserStatusInManagement() {
+            if (!currentManagedUserId) return;
+            
+            try {
+                // Get current status first
+                const response = await fetch(`http://localhost:8000/api/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                const users = data.users || data;
+                const user = users.find(u => u.id == currentManagedUserId);
+                
+                if (!user) return;
+                
+                const newStatus = user.isActive ? 0 : 1;
+                
+                const updateResponse = await fetch(`http://localhost:8000/api/users/${currentManagedUserId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ isActive: newStatus })
+                });
+                
+                if (updateResponse.ok) {
+                    alert(`User ${newStatus ? 'activated' : 'deactivated'} successfully!`);
+                    loadUserInfo(currentManagedUserId);
+                } else {
+                    const error = await updateResponse.json();
+                    alert('Error updating user status: ' + (error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error updating user status: ' + (error.message || error.toString()));
+            }
+        }
+
+        function showAddTestForUserInManagement() {
+            if (!currentManagedUserId || !currentManagedUserName) return;
+            showAddTestForUser(currentManagedUserId, currentManagedUserName);
+        }
+
+        async function loadUserTestsInManagement() {
+            if (!currentManagedUserId) return;
+            
+            try {
+                const response = await fetch(`http://localhost:8000/api/user-tests?userId=${currentManagedUserId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                console.log('User tests API response:', data);
+                
+                // Handle the API response format
+                let userTests = [];
+                if (data.tests && Array.isArray(data.tests)) {
+                    userTests = data.tests;
+                } else if (Array.isArray(data)) {
+                    userTests = data;
+                } else if (data.message) {
+                    // Handle error messages
+                    throw new Error(data.message);
+                }
+                
+                const container = document.getElementById('userTestsManagementList');
+                if (!userTests || userTests.length === 0) {
+                    container.innerHTML = '<p>No tests assigned to this user yet.</p>';
+                    return;
+                }
+                
+                container.innerHTML = userTests.map(test => `
+                    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                        <h5>${test.testName || 'Test #' + test.id}</h5>
+                        <p><strong>Category:</strong> ${test.category || 'N/A'}</p>
+                        <p><strong>Description:</strong> ${test.description || 'N/A'}</p>
+                        <p><strong>Status:</strong> ${test.status || 'Pending'}</p>
+                        <p><strong>Assigned Date:</strong> ${test.testDate || 'N/A'}</p>
+                        <p><strong>Notes:</strong> ${test.notes || 'None'}</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="deleteUserTest(${test.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove Test</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                alert('Error loading user tests: ' + (error.message || error.toString()));
+            }
+        }
+
+        function editUserInfo() {
+            // Placeholder for edit functionality
+            alert('Edit user info functionality will be implemented here');
+        }
+
+        // Override showSection to handle user management button visibility
+        const originalShowSection = showSection;
+        function showSection(sectionName) {
+            // Update nav buttons
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Show/hide content
+            document.querySelectorAll('[id$="Content"]').forEach(content => content.style.display = 'none');
+            document.getElementById(sectionName + 'Content').style.display = 'block';
+            
+            // Hide user management button when not in user management
+            if (sectionName !== 'userManagement') {
+                document.getElementById('userManagementBtn').style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

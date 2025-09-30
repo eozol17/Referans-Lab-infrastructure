@@ -624,6 +624,46 @@ def get_user(user_id):
     except Exception as e:
         return jsonify({'message': 'Server error'}), 500
 
+@app.route('/api/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
+@require_role(['admin', 'personnel'])
+def update_user(user_id):
+    try:
+        data = request.get_json()
+        conn = get_db_connection()
+        
+        # Check if user exists
+        user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+        if not user:
+            conn.close()
+            return jsonify({'message': 'User not found'}), 404
+        
+        # Build dynamic update query
+        fields = []
+        values = []
+        
+        allowed_fields = ['isActive']
+        for field in allowed_fields:
+            if field in data:
+                fields.append(f'{field} = ?')
+                values.append(data[field])
+        
+        if not fields:
+            conn.close()
+            return jsonify({'message': 'No valid fields to update'}), 400
+        
+        values.append(user_id)
+        query = f'UPDATE users SET {", ".join(fields)}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?'
+        
+        conn.execute(query, values)
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'User updated successfully'})
+        
+    except Exception as e:
+        return jsonify({'message': 'Server error updating user'}), 500
+
 
 @app.route('/')
 def home():
